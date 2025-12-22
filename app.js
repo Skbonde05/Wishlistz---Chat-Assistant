@@ -5,23 +5,48 @@
 // let num2 = 25;
 // let sum = num1 + num2;
 
+// Wishlistz Chatbot JavaScript
+
 // Get DOM elements
 const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const chatMessages = document.getElementById('chatMessages');
+const attachButton = document.getElementById('attachButton');
+const fileInput = document.getElementById('fileInput');
 
 // Array of bot responses
 const botResponses = [
-    "Welcome to Wishlistz 👋",
-    "How can I help you today?",
-    "Your wishlist has been updated.",
-    "I'm here to assist you with your wishlist!",
-    "That's a great choice! Added to your wishlist.",
-    "Would you like to see your current wishlist?",
-    "I can help you organize your wishes! 🎁",
-    "Let me know what you'd like to add.",
-    "Your wishlist is looking great!",
-    "I'm processing your request... Done! ✅"
+  "Welcome to Wishlistz 🛍️",
+  "Men, Women or Kids?",
+  "Browse latest fashion 🔥",
+  "Great choice!",
+  "Added to wishlist ❤️",
+  "Item available in all sizes",
+  "Check today’s offers 💸",
+  "Popular item right now ⭐",
+  "View your wishlist anytime",
+  "New arrivals are live ✨",
+  "Need size help?",
+  "More styles available 👗👔",
+  "Item saved successfully ✔️",
+  "Shop smart with Wishlistz 🛒",
+  "What would you like to add?"
+];
+
+// Array of file-specific bot responses
+const fileResponses = [
+    "📎Looks like a shirt 👕 Added to your wishlist",
+    "✅Beautiful! dress saved successfully.",
+    "✨ Men’s product added 👔.",
+    "🎨 Product image saved to wishlist ❤️!"
+];
+
+// Array of image-specific bot responses
+const imageResponses = [
+    "✅Looks like a shirt 👕 Added to your wishlist",
+    "📸 Beautiful! dress saved successfully.",
+    "✨ Men’s product added 👔.",
+    "🎨 Product image saved to wishlist ❤️!"
 ];
 
 //    Helper Function: Get Current Time
@@ -39,6 +64,42 @@ function getCurrentTime() {
     minutes = minutes < 10 ? '0' + minutes : minutes;
 
     return `${hours}:${minutes} ${ampm}`;
+}
+
+// Helper Function: Get File Extension
+function getFileExtension(filename) {
+    return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2).toLowerCase();
+}
+
+//  Helper Function: Get File Icon
+function getFileIcon(extension) {
+    const iconMap = {
+        'pdf': '📄',
+        'doc': '📝',
+        'docx': '📝',
+        'txt': '📃',
+        'jpg': '🖼️',
+        'jpeg': '🖼️',
+        'png': '🖼️'
+    };
+    return iconMap[extension] || '📎';
+}
+
+//  Helper Function: Format File Size
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+// Helper Function: Check if File is Image
+function isImageFile(filename) {
+    const extension = getFileExtension(filename);
+    return ['jpg', 'jpeg', 'png'].includes(extension);
 }
 
 //    Helper Function: Scroll to Bottom
@@ -67,6 +128,97 @@ function addMessage(text, isUser = false) {
 
     // Append elements
     messageContent.appendChild(messageText);
+    messageContent.appendChild(messageTime);
+    messageDiv.appendChild(messageContent);
+    chatMessages.appendChild(messageDiv);
+
+    // Scroll to bottom
+    scrollToBottom();
+}
+
+// Function: Add File Message to Chat
+function addImageMessage(imageSrc, isUser = false) {
+    // Create message container
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+
+    // Create message content
+    const messageContent = document.createElement('div');
+    messageContent.className = 'message-content has-image';
+
+    // Create image element
+    const img = document.createElement('img');
+    img.src = imageSrc;
+    img.className = 'message-image';
+    img.alt = 'Uploaded image';
+
+    // Create timestamp
+    const messageTime = document.createElement('span');
+    messageTime.className = 'message-time';
+    messageTime.textContent = getCurrentTime();
+
+    // Append elements
+    messageContent.appendChild(img);
+    messageContent.appendChild(messageTime);
+    messageDiv.appendChild(messageContent);
+    chatMessages.appendChild(messageDiv);
+
+    // Scroll to bottom
+    scrollToBottom();
+}
+
+// Function: Add File Message to Chat
+function addFileMessage(fileName, fileSize, isUser = false) {
+    // Get file extension and icon
+    const extension = getFileExtension(fileName);
+    const icon = getFileIcon(extension);
+
+    // Create message container
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+
+    // Create message content
+    const messageContent = document.createElement('div');
+    messageContent.className = 'message-content';
+
+    // Create file card
+    const fileCard = document.createElement('div');
+    fileCard.className = 'file-card';
+
+    // Create file icon
+    const fileIcon = document.createElement('div');
+    fileIcon.className = 'file-icon';
+    fileIcon.textContent = icon;
+
+    // Create file info container
+    const fileInfo = document.createElement('div');
+    fileInfo.className = 'file-info';
+
+    // Create file name
+    const fileNameDiv = document.createElement('div');
+    fileNameDiv.className = 'file-name';
+    fileNameDiv.textContent = fileName;
+
+    // Create file size
+    const fileSizeDiv = document.createElement('div');
+    fileSizeDiv.className = 'file-size';
+    fileSizeDiv.textContent = formatFileSize(fileSize);
+
+    // Append file info
+    fileInfo.appendChild(fileNameDiv);
+    fileInfo.appendChild(fileSizeDiv);
+
+    // Append to file card
+    fileCard.appendChild(fileIcon);
+    fileCard.appendChild(fileInfo);
+
+    // Create timestamp
+    const messageTime = document.createElement('span');
+    messageTime.className = 'message-time';
+    messageTime.textContent = getCurrentTime();
+
+    // Append to message content
+    messageContent.appendChild(fileCard);
     messageContent.appendChild(messageTime);
     messageDiv.appendChild(messageContent);
     chatMessages.appendChild(messageDiv);
@@ -115,8 +267,20 @@ function getRandomBotResponse() {
     return botResponses[randomIndex];
 }
 
+// Function: Get Random File Response
+function getRandomFileResponse() {
+    const randomIndex = Math.floor(Math.random() * fileResponses.length);
+    return fileResponses[randomIndex];
+}
+
+//    Function: Get Random Image Response
+function getRandomImageResponse() {
+    const randomIndex = Math.floor(Math.random() * imageResponses.length);
+    return imageResponses[randomIndex];
+}
+
 //    Function: Send Bot Response
-function sendBotResponse() {
+function sendBotResponse(isFileUpload = false, isImageUpload = false) {
     // Show typing indicator
     showTypingIndicator();
 
@@ -127,12 +291,55 @@ function sendBotResponse() {
         // Remove typing indicator
         removeTypingIndicator();
 
-        // Add bot message
-        const botMessage = getRandomBotResponse();
+        // Add bot message based on context
+        let botMessage;
+        if (isImageUpload) {
+            botMessage = getRandomImageResponse();
+        } else if (isFileUpload) {
+            botMessage = getRandomFileResponse();
+        } else {
+            botMessage = getRandomBotResponse();
+        }
+
         addMessage(botMessage, false);
     }, thinkingTime);
 }
 
+// Function: Handle File Upload
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+
+    // Check if file exists
+    if (!file) {
+        return;
+    }
+
+    // Check if file is an image
+    if (isImageFile(file.name)) {
+        // Use FileReader to read image as Data URL
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            // Add image message to chat
+            addImageMessage(e.target.result, true);
+
+            // Send bot response for image
+            sendBotResponse(false, true);
+        };
+
+        // Read file as Data URL (base64)
+        reader.readAsDataURL(file);
+    } else {
+        // Handle other file types (PDF, DOC, TXT)
+        addFileMessage(file.name, file.size, true);
+
+        // Send bot response for file
+        sendBotResponse(true, false);
+    }
+
+    // Reset file input so same file can be uploaded again
+    fileInput.value = '';
+}
 //    Function: Handle Send Message
 function handleSendMessage() {
     // Get message text and trim whitespace
@@ -157,6 +364,14 @@ function handleSendMessage() {
 }
 
 //    Event Listeners
+
+// Attach button click event - triggers file input
+attachButton.addEventListener('click', () => {
+    fileInput.click();
+});
+
+// File input change event - handles file upload
+fileInput.addEventListener('change', handleFileUpload);
 
 // Send button click event
 sendButton.addEventListener('click', handleSendMessage);
