@@ -468,7 +468,7 @@ body.light-mode .user-message .message-content {
     pointer-events: none;
   }
 
-  .chat-container {
+.chat-container {
   width: calc(100% - 32px) !important;
   max-width: 420px !important;
   margin: 0 auto !important;
