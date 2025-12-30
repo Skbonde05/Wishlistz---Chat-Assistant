@@ -486,6 +486,10 @@ body.light-mode .user-message .message-content {
   padding-top: 20px !important;
 }
 
+  .chat-header {
+  padding-top: 16px !important; /* ⬅️ Adds breathing room above the header */
+}
+
   .chat-messages {
     background-attachment: scroll !important;
     background-position: center !important;
